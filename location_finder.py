@@ -3,18 +3,21 @@ from streetview import getImage, getAddress
 from json import loads
 from sys import argv, exit
 
+import argparse
 import requests as r
 import utm
 import xlsxwriter
 
+# Argparser configuration
+parser = argparse.ArgumentParser(description="Työkalu, jolla voit löytää mahdollisesti hulvattomia umpitiemerkkejä (Kuvissa 100% varmuudella merkki ei kuitenkaan näy :/).")
+parser.add_argument("-l", "--lista", metavar="", help="Listaa osoitteet ja mahdolliset kylttien kuvaukset Exceliin")
+parser.add_argument("-k", "--kuva", metavar="", help="Luo jokaista osoitetta kohden kansion ja yrittää taltioida liikennemerkin Google Street Viewin avulla")
+
+args = parser.parse_args()
+
 workbook = None
 
-onlyList = False
-if len(argv) > 1:
-    if argv[1]=="lista": onlyList = True
-
-
-if onlyList:
+if args.lista:
     ans = input("Huomaathan, että ohjelma ylikirjoittaa jo olemassa olevan excel tiedoston. Haluatko jatkaa? (k/e): ")
     if ans != "k":
         print("\nNo ei vittu sitte 😢\n")
@@ -42,7 +45,7 @@ if res.status_code == 200:
         coord_y = feature["geometry"]["coordinates"][1]
         lat, long =  utm.to_latlon(coord_x, coord_y, 35, "N")
 
-        if onlyList:
+        if args.lista:
             addr = getAddress(lat,long)
             desc = feature["properties"]["paamerktxt"]
 
@@ -51,7 +54,7 @@ if res.status_code == 200:
 
             row += 1
         
-        else:
+        if args.kuva:
             getImage(lat,long)
 
 if workbook:
