@@ -12,36 +12,16 @@ def getImage(lat, long):
         return
     os.mkdir(addr)
 
-    urlNorth = f"https://maps.googleapis.com/maps/api/streetview?location={lat},{long}&size=1800x300&fov=180&heading=0&key={key}"
-    urlEast = f"https://maps.googleapis.com/maps/api/streetview?location={lat},{long}&size=1800x300&fov=180&heading=90&key={key}"
-    urlSouth = f"https://maps.googleapis.com/maps/api/streetview?location={lat},{long}&size=1800x300&fov=180&heading=180&key={key}"
-    urlWest = f"https://maps.googleapis.com/maps/api/streetview?location={lat},{long}&size=1800x300&fov=180&heading=270&key={key}"
+    for heading in range(0,360,45):
+        url = f"https://maps.googleapis.com/maps/api/streetview?location={lat},{long}&size=1440x1080&heading={heading}&key={key}"
 
-    northFile = os.path.join(addr, "north.jpg")
-    eastFile = os.path.join(addr, "east.jpg")
-    southFile = os.path.join(addr, "south.jpg")
-    westFile = os.path.join(addr, "west.jpg")
+        fileName = os.path.join(addr, f"{heading}.jpg")
 
-    res = r.get(urlNorth)
-    with open(northFile, 'wb') as f:
-        f.write(res.content)
-        f.close()
+        res = r.get(url)
+        with open(fileName, 'wb') as f:
+            f.write(res.content)
+            f.close()
 
-    res = r.get(urlEast)
-    with open(eastFile, 'wb') as f:
-        f.write(res.content)
-        f.close()
-
-    res = r.get(urlSouth)
-    with open(southFile, 'wb') as f:
-        f.write(res.content)
-        f.close()
-
-    res = r.get(urlWest)
-    with open(westFile, 'wb') as f:
-        f.write(res.content)
-        f.close()
-    
 def getAddress(lat, long):
     baseUrl = "https://maps.googleapis.com/maps/api/geocode/json"
     params = {"latlng":f"{lat},{long}","key":key,"language":"fi"}
