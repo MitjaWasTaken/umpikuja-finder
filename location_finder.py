@@ -10,8 +10,8 @@ import xlsxwriter
 
 # Argparser configuration
 parser = argparse.ArgumentParser(description="Työkalu, jolla voit löytää mahdollisesti hulvattomia umpitiemerkkejä (Kuvissa 100% varmuudella merkki ei kuitenkaan näy :/).")
-parser.add_argument("-l", "--lista", metavar="", help="Listaa osoitteet ja mahdolliset kylttien kuvaukset Exceliin")
-parser.add_argument("-k", "--kuva", metavar="", help="Luo jokaista osoitetta kohden kansion ja yrittää taltioida liikennemerkin Google Street Viewin avulla")
+parser.add_argument("-l", "--lista", help="Listaa osoitteet ja mahdolliset kylttien kuvaukset Exceliin", action="store_true")
+parser.add_argument("-k", "--kuva", help="Luo jokaista osoitetta kohden kansion ja yrittää taltioida liikennemerkin Google Street Viewin avulla", action="store_true")
 
 args = parser.parse_args()
 
