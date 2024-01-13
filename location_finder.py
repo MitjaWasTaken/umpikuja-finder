@@ -12,6 +12,7 @@ import xlsxwriter
 parser = argparse.ArgumentParser(description="Työkalu, jolla voit löytää mahdollisesti hulvattomia umpitiemerkkejä (Kuvissa 100% varmuudella merkki ei kuitenkaan näy :/).")
 parser.add_argument("-l", "--lista", help="Listaa osoitteet ja mahdolliset kylttien kuvaukset Exceliin", action="store_true")
 parser.add_argument("-k", "--kuva", help="Luo jokaista osoitetta kohden kansion ja yrittää taltioida liikennemerkin Google Street Viewin avulla", action="store_true")
+parser.add_argument("-t", "--tyyppi", help="Halutessasi voit etsiä erinäisiä kylttejä käyttämällä tyyppitunnusta, kuten \"A1.1\" mutkalle", type=str, default="F24.2")
 
 args = parser.parse_args()
 
@@ -33,7 +34,7 @@ if args.lista:
 
 url = "https://avoinapi.vaylapilvi.fi/vaylatiedot/digiroad/wfs"
 
-params = {"request":"GetFeature","count":20,"cql_filter":"tyyppi='F24.2'","outputFormat":"json","service":"wfs","version":"2.0.0","typeNames":"dr_liikennemerkit"}
+params = {"request":"GetFeature","count":20,"cql_filter":f"tyyppi='{args.tyyppi}'","outputFormat":"json","service":"wfs","version":"2.0.0","typeNames":"dr_liikennemerkit"}
 
 res = r.get(url, params=params)
 
