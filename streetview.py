@@ -14,7 +14,7 @@ def getImage(lat, long):
     os.mkdir(addr)
 
     for heading in range(0,360,45):
-        url = f"https://maps.googleapis.com/maps/api/streetview?location={lat},{long}&size=1440x1080&heading={heading}&key={key}"
+        url = f"https://maps.googleapis.com/maps/api/streetview?location={lat},{long}&size=640x640&heading={heading}&key={key}"
         signed_url = sign_url(url)
 
         fileName = os.path.join(addr, f"{heading}.jpg")
