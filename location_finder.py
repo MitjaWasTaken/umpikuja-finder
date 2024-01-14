@@ -9,13 +9,17 @@ import requests as r
 import utm
 
 # Argparser configuration
-parser = argparse.ArgumentParser(description="Työkalu, jolla voit löytää mahdollisesti hulvattomia umpitiemerkkejä (Kuvissa 100% varmuudella merkki ei kuitenkaan näy :/).")
-parser.add_argument("-l", "--lista", help="Listaa osoitteet ja mahdolliset kylttien kuvaukset Exceliin", action="store_true")
+parser = argparse.ArgumentParser(description="Työkalu, jolla voit löytää mahdollisesti hulvattomia umpitiemerkkejä (Kuvissa 100% varmuudella merkki ei kuitenkaan näy :/).", epilog="Mitja Komi 2024")
+parser.add_argument("-l", "--lista", help="Listaa osoitteet ja mahdolliset kylttien kuvaukset exceliin.", action="store_true")
 parser.add_argument("-k", "--kuva", help="Luo jokaista osoitetta kohden kansion ja yrittää taltioida liikennemerkin Google Street Viewin avulla", action="store_true")
-parser.add_argument("-c", "--count", metavar="n", help="Rajoitaa kuinka monta merkkiä haetaan", type=int, default=10)
+parser.add_argument("-c", "--count", metavar="n", help="Rajoittaa kuinka monta merkkiä haetaan", type=int, default=10)
 parser.add_argument("-t", "--tyyppi", help="Halutessasi voit etsiä erinäisiä kylttejä käyttämällä tyyppitunnusta, kuten \"A1.1\" mutkalle", type=str, default="F24.2")
 
 args = parser.parse_args()
+
+if not args.lista and not args.kuva:
+    print("\nArgumentti --kuva tai --lista tarvitaan ohjelman suorittamiseksi!\n")
+    exit(0) 
 
 workbook = None
 last_row = 0
