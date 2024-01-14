@@ -39,7 +39,7 @@ if args.lista:
     worksheet.set_column(3, 3, 40)
 
 url = "https://avoinapi.vaylapilvi.fi/vaylatiedot/digiroad/wfs"
-params = {"request":"GetFeature","count":200,"cql_filter":f"tyyppi='{args.tyyppi}'","outputFormat":"json","service":"wfs","version":"2.0.0","typeNames":"dr_liikennemerkit"}
+params = {"request":"GetFeature","count":20,"cql_filter":f"tyyppi='{args.tyyppi}'","outputFormat":"json","service":"wfs","version":"2.0.0","typeNames":"dr_liikennemerkit"}
 
 res = r.get(url, params=params)
 
@@ -70,5 +70,12 @@ if res.status_code == 200:
                 
     except KeyboardInterrupt:
         if workbook:
+            print("Tallenetaan tiedostoa...")
             workbook.close()
         exit(0)
+
+else:
+    print(f"Nyt ei saatu väylää kiinne :/ ({res.status_code})")
+
+if workbook:
+    workbook.close()
