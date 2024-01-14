@@ -1,4 +1,5 @@
 from streetview import getImage, getAddress
+from utils import load_exclude_ids, add_id_exclucion, append_previous_excel
 
 from json import loads
 from sys import exit
@@ -6,7 +7,6 @@ from sys import exit
 import argparse
 import requests as r
 import utm
-import xlsxwriter
 
 # Argparser configuration
 parser = argparse.ArgumentParser(description="Työkalu, jolla voit löytää mahdollisesti hulvattomia umpitiemerkkejä (Kuvissa 100% varmuudella merkki ei kuitenkaan näy :/).")
@@ -18,37 +18,37 @@ parser.add_argument("-t", "--tyyppi", help="Halutessasi voit etsiä erinäisiä 
 args = parser.parse_args()
 
 workbook = None
+last_row = 0
 
 if args.lista:
-    ans = input("Huomaathan, että ohjelma ylikirjoittaa jo olemassa olevan excel tiedoston. Haluatko jatkaa? (k/e): ")
+    ans = input("Huomaathan, että ohjelma output.xlsx tiedoston löytyessä lisää listan sen rivien perään. Haluatko jatkaa? (k/e): ")
     if ans != "k":
         print("\nNo ei vittu sitte 😢\n")
         exit(1)
+    print("\n")
 
-    workbook = xlsxwriter.Workbook('output.xlsx')
-    worksheet = workbook.add_worksheet()
+    workbook, worksheet, last_row = append_previous_excel("output.xlsx")
 
-    bold_format = workbook.add_format()
-    bold_format.set_bold()
+exclude_ids_filename = "exclude_ids"
 
-    worksheet.write("A1", "Osoite", bold_format)
-    worksheet.set_column(0, 0, 25)
-    worksheet.write("B1", "Kunta/Kaupunki", bold_format)
-    worksheet.set_column(1, 1, 20)
-    worksheet.write("C1", "Kartalla", bold_format)
-    worksheet.write("D1", "Kuvaus", bold_format)
-    worksheet.set_column(3, 3, 40)
+def request_data(count):
+    url = "https://avoinapi.vaylapilvi.fi/vaylatiedot/digiroad/wfs?service=wfs&version=2.0.0"
+    params = {"typeNames":"dr_liikennemerkit", "request":"GetFeature","count":count,"propertyName": "(geom,paamerktxt)", "cql_filter":f"tyyppi='{args.tyyppi}'","outputFormat":"json",}
 
-url = "https://avoinapi.vaylapilvi.fi/vaylatiedot/digiroad/wfs?service=wfs&version=2.0.0"
-params = {"typeNames":"dr_liikennemerkit", "request":"GetFeature","count":args.count,"propertyName": "(geom,paamerktxt)", "cql_filter":f"tyyppi='{args.tyyppi}'","outputFormat":"json",}
+    return r.get(url, params=params)
 
-res = r.get(url, params=params)
+def handle_data(data, last_row, exclude_ids):
+    leftover = 0
+    found = 0
+    row = last_row
 
-if res.status_code == 200:
     try:
-        json = loads(res.text)
-        row = 1
-        for feature in json["features"]:
+        for feature in data["features"]:
+            id =  feature["properties"]["id"]
+            if id in exclude_ids:
+                leftover += 1
+                continue
+
             coord_x = feature["geometry"]["coordinates"][0]
             coord_y = feature["geometry"]["coordinates"][1]
             lat, long =  utm.to_latlon(coord_x, coord_y, 35, "N")
@@ -64,19 +64,39 @@ if res.status_code == 200:
                 worksheet.write_url(row, 2, link, string="linkki")
                 worksheet.write(row, 3, desc)
 
+                print(f"Added \"{addr}\" to list!")
                 row += 1
             
             if args.kuva:
                 getImage(lat,long)
-                
+
+            add_id_exclucion(id, exclude_ids_filename)
+            found += 1
+        
+        return leftover, found, row
+    
     except KeyboardInterrupt:
         if workbook:
             print("Tallenetaan tiedostoa...")
             workbook.close()
         exit(0)
 
-else:
-    print(f"Nyt ei saatu väylää kiinne :/ ({res.status_code})")
+
+still_need = args.count
+offset = 0
+already = 0
+while already < args.count:
+    exclude_ids = load_exclude_ids(exclude_ids_filename) 
+    offset = len(exclude_ids)-1
+    res = request_data(still_need+offset)
+    
+
+    if res.status_code == 200:
+        still_need, already, last_row = handle_data(loads(res.text), last_row, exclude_ids)
+        
+    else:
+        print(f"Nyt ei saatu väylää kiinne :/ ({res.status_code})")
+        break
 
 if workbook:
     workbook.close()
