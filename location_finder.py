@@ -14,12 +14,17 @@ parser.add_argument("-l", "--lista", help="Listaa osoitteet ja mahdolliset kyltt
 parser.add_argument("-k", "--kuva", help="Luo jokaista osoitetta kohden kansion ja yrittää taltioida liikennemerkin Google Street Viewin avulla", action="store_true")
 parser.add_argument("-c", "--count", metavar="n", help="Rajoittaa kuinka monta merkkiä haetaan", type=int, default=10)
 parser.add_argument("-t", "--tyyppi", help="Halutessasi voit etsiä erinäisiä kylttejä käyttämällä tyyppitunnusta, kuten \"A1.1\" mutkalle", type=str, default="F24.2")
+parser.add_argument("-p", "--polku", help="Halutessasi voit antaa polun kansioon, jonka sisälle kansiot osotteista tallennetaan (Vaatii -k argumentin)", type=str)
 
 args = parser.parse_args()
 
 if not args.lista and not args.kuva:
     print("\nArgumentti --kuva tai --lista tarvitaan ohjelman suorittamiseksi!\n")
     exit(0) 
+
+if not args.kuva and args.polku:
+    print("\n--polku argumentti vaatii --kuva argumentin!\n")
+    exit(0)
 
 workbook = None
 last_row = 0
@@ -68,11 +73,12 @@ def handle_data(data, last_row, exclude_ids):
                 worksheet.write_url(row, 2, link, string="linkki")
                 worksheet.write(row, 3, desc)
 
-                print(f"Added \"{addr}\" to list!")
+                print(f"Lisättiin \"{addr}\" listaan!")
                 row += 1
             
             if args.kuva:
-                getImage(lat,long)
+                if args.polku: getImage(lat,long, filePathOffset=args.polku)
+                else: getImage(lat,long)
 
             add_id_exclucion(id, exclude_ids_filename)
             found += 1
