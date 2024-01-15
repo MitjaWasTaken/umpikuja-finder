@@ -15,7 +15,7 @@ parser.add_argument("-k", "--kuva", help="Luo jokaista osoitetta kohden kansion 
 parser.add_argument("-c", "--count", metavar="n", help="Rajoittaa kuinka monta merkkiä haetaan", type=int, default=10)
 parser.add_argument("-t", "--tyyppi", help="Halutessasi voit etsiä erinäisiä kylttejä käyttämällä tyyppitunnusta, kuten \"A1.1\" mutkalle", type=str, default="F24.2")
 parser.add_argument("-p", "--polku", help="Halutessasi voit antaa polun kansioon, jonka sisälle kansiot osotteista tallennetaan (Vaatii -k argumentin)", type=str)
-parser.add_argument("-e", "--exclude", help="Halutessasi voit itse määrittää tiedoston, jossa on/johon listataan jo läpikäytyjen kylttien tunnisteet", type=str)
+parser.add_argument("-e", "--exclude", help="Halutessasi voit itse määrittää tiedoston, jossa on/johon listataan jo läpikäytyjen kylttien tunnisteet", type=str, default="exclude_ids")
 
 args = parser.parse_args()
 
@@ -39,7 +39,7 @@ if args.lista:
 
     workbook, worksheet, last_row = append_previous_excel("output.xlsx")
 
-exclude_ids_filename = args.exclude or "exclude_ids"
+exclude_ids_filename = "exclude_ids"
 
 def request_data(count):
     url = "https://avoinapi.vaylapilvi.fi/vaylatiedot/digiroad/wfs?service=wfs&version=2.0.0"
