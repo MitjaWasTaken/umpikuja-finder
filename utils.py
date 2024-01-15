@@ -42,7 +42,7 @@ def add_id_exclucion(id, file):
 
 def append_previous_excel(file):
     if not os.path.exists(file):
-        workbook = xlsxwriter.Workbook('output.xlsx', data_only=True)
+        workbook = xlsxwriter.Workbook('output.xlsx')
         worksheet = workbook.add_worksheet()
         rows = []
     else:
