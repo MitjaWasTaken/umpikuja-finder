@@ -14,7 +14,7 @@ parser.add_argument("-l", "--list", help="List the addresses of traffic signs an
 parser.add_argument("-o", "--output", metavar="", help="Define the output file; default output.xlsx", default="output.xlsx")
 parser.add_argument("-a", "--append", metavar="", help="Define the file that will be appended to the start of the output file; default output.xlsx (Please don't give a file that isn't the output of this program. Not compatible with the output of the budget Excel)", default="output.xlsx")
 parser.add_argument("-s", "--street", help="Fetch pictures from Google Street View to folders by addresses (not 100%% accurate due to very good data provided by the Finnish Transport Infrastructure Agency) ", action="store_true")
-parser.add_argument("-c", "--count", metavar="n", help="Limit the number of signs to be searched", type=int, default=10)
+parser.add_argument("-c", "--count", metavar="n", help="Limit the number of signs to be searched", type=int, default=-1)
 parser.add_argument("-t", "--type", help="Search any type of sign using a traffic sign type. For example, A1.1 for mutka", type=str, default="F24.2")
 parser.add_argument("-p", "--path", help="Define the path where folders by addresses with pictures are stored (requires -s parameter)", type=str)
 parser.add_argument("-e", "--exclude", help="Define the file where the ids of traffic signs that will be excluded are saved and the ids of searched signs will be saved", type=str, default="exclude_ids")
@@ -73,7 +73,9 @@ exclude_ids_filename = args.exclude
 
 def request_data(count):
     url = "https://avoinapi.vaylapilvi.fi/vaylatiedot/digiroad/wfs?service=wfs&version=2.0.0"
-    params = {"typeNames":"dr_liikennemerkit", "request":"GetFeature","count":count,"propertyName": "(geom,paamerktxt)", "cql_filter":f"tyyppi='{args.type}'","outputFormat":"json",}
+    params = {"typeNames":"dr_liikennemerkit", "request":"GetFeature","propertyName": "(geom,paamerktxt)", "cql_filter":f"tyyppi='{args.type}'","outputFormat":"json",}
+    if count > 0:
+        params.update(count = count)
 
     return r.get(url, params=params)
 

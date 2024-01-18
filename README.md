@@ -23,7 +23,7 @@ If you wish to setup Google Cloud, you must add the <a href="https://developers.
 ```sh
 pip install -r requirements.txt
 ``` 
-3. Run the program with flag suitable for your needs
+3. Run the program with flags suitable for your needs
 ```sh
 python location_finder.py -k -l -c 10 -o wou.xlsx
 ```
