@@ -50,8 +50,7 @@ location_finder.py [-h] [-b] [-l] [-o] [-a] [-s] [-c n] [-t TYPE] [-p PATH] [-e 
 output file
 -l, --list            List the addresses of traffic signs and possible descriptions in Excel
 -o , --output         Define the output file; default output.xlsx
--a , --append         Define the file that will be appended to the start of the output file; default output.xls (Please don't give a file that isn't the output of this program. Not compatible with the output of the budge
-Excel)
+-a , --append         Define the file that will be appended to the start of the output file; default output.xls (Please don't give a file that isn't the output of this program. Not compatible with the output of the budget Excel)
 -s, --street          Fetch pictures from Google Street View to folders by addresses (not 100% accurate due to very good data provided by the Finnish Transport Infrastructure Agency)
 -c n, --count n       Limit the number of signs to be searched
 -t TYPE, --type TYPE  Search any type of sign using a traffic sign type. For example, A1.1 for mutka
