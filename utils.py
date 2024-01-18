@@ -33,11 +33,12 @@ def load_exclude_ids(file):
 
     return list_of_ids
 
-def add_id_exclucion(id, file):
+def add_id_exclucion(ids, file):
     if not os.path.exists(file): open(file, "wt").close()
 
     with open(file, "at") as file:
-        file.write(id+"\n")
+        for id in ids:
+            file.write(id+"\n")
         file.close()
 
 def append_previous_excel(file):
