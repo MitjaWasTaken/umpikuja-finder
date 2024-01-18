@@ -21,6 +21,12 @@ def sign_url(url):
     original_url = url.scheme + "://" + url.netloc + url.path + "?" + url.query
     return f"{original_url}&signature={encoded_signature.decode()}"
 
+def parse_excel_file(file_name):
+    lenght = len(file_name)
+    if file_name[lenght-5:lenght] == ".xlsx":
+        return file_name
+    else: return file_name+".xlsx"
+
 def load_exclude_ids(file):
     if not os.path.exists(file): return []
 
@@ -41,13 +47,12 @@ def add_id_exclucion(ids, file):
             file.write(id+"\n")
         file.close()
 
-def append_previous_excel(file):
-    if not os.path.exists(file):
-        workbook = xlsxwriter.Workbook('output.xlsx')
-        worksheet = workbook.add_worksheet()
-        rows = []
-    else:
-        book = openpyxl.load_workbook(file)
+
+def append_previous_excel(prev_file, file):
+    if not os.path.exists(file): rows = []
+
+    if os.path.exists(prev_file):
+        book = openpyxl.load_workbook(prev_file)
         sheet = book.worksheets[0]
 
         rows = []
@@ -55,11 +60,13 @@ def append_previous_excel(file):
             rows.append(row)
         # Remove row with titles
         rows.pop(0)
-        
-        book.close()
 
-        workbook = xlsxwriter.Workbook('output.xlsx')
-        worksheet = workbook.add_worksheet()
+        book.close()
+    
+    else: rows = []
+
+    workbook = xlsxwriter.Workbook(file)
+    worksheet = workbook.add_worksheet()
 
     bold_format = workbook.add_format()
     bold_format.set_bold()
@@ -82,3 +89,4 @@ def append_previous_excel(file):
             print("Jotain meni pieleen excelin kanssa :/")
 
     return workbook, worksheet, len(rows)+1
+

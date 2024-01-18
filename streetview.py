@@ -10,7 +10,7 @@ def getImage(lat, long, filePathOffset=""):
     addr = getAddress(lat, long)
     folder = os.path.join(filePathOffset, addr)
     if os.path.exists(folder): 
-        print("Location already exist")
+        print(f"The location already exists in the folder: {folder}")
         return
     os.makedirs(folder)
 
@@ -25,7 +25,7 @@ def getImage(lat, long, filePathOffset=""):
             f.write(res.content)
             f.close()
     
-    print(f"Koitettiin ladata \"{addr}\":n kyltin kuvat kansioon \"{folder}\"!")
+    print(f"Tried to download photos of \"{addr}\" into \"{folder}\"!")
 
 def getAddress(lat, long):
     baseUrl = "https://maps.googleapis.com/maps/api/geocode/json"
